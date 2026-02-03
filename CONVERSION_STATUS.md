@@ -75,42 +75,124 @@
 
 ## Phase 1: Gap Analysis (Check What's Missing)
 
+### CRITICAL REFERENCE FILE
+
+**The file `src/ndi/docs/developer_notes/vltInNDI.md` contains the COMPLETE list of all 97 vlt.* functions used in NDI with exact file:line locations.**
+
+This file should be the authoritative source for the gap analysis, not estimates.
+
 Before writing any code, verify which vlt.* functions NDI needs are already ported.
 
-### vlt.data Functions Needed by NDI
+### vlt.data Functions - AUDIT RESULTS (36 files exist in vhlab-toolbox-python)
 
-| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
-|----------|--------------|--------------------------|--------|
-| `vlt.data.emptystruct()` | 69 | ⬜ Check | If missing, contribute PR |
-| `vlt.data.assign()` | 26 | N/A | Use Python kwargs |
-| `vlt.data.colvec()` | 16 | ⬜ Check | If missing, contribute PR |
-| `vlt.data.eqlen()` | 14 | ⬜ Check | If missing, contribute PR |
-| `vlt.data.matrow2cell()` | 11 | ⬜ Check | If missing, contribute PR |
-| `vlt.data.celloritem()` | 9 | ⬜ Check | If missing, contribute PR |
-| `vlt.data.cellarray2mat()` | 8 | ✅ Ported | Use it |
-| `vlt.data.structmerge()` | 3 | ✅ Ported | Use it |
-| `vlt.data.flattenstruct2table()` | 3 | ✅ Ported | Use it |
-| `vlt.data.isint()` | 1 | ✅ Ported | Use it |
-| `vlt.data.islikevarname()` | 3 | ✅ Ported | Use it |
+**Source:** https://github.com/VH-Lab/vhlab-toolbox-python/tree/main/vlt/data
 
-### vlt.file Functions Needed by NDI
+| Function | Calls in NDI | In vhlab-toolbox-python? | File |
+|----------|--------------|--------------------------|------|
+| `vlt.data.emptystruct()` | 69 | ✅ YES | `emptystruct.py` |
+| `vlt.data.assign()` | 26 | ✅ YES | `assign.py` |
+| `vlt.data.colvec()` | 16 | ✅ YES | `colvec.py` |
+| `vlt.data.eqlen()` | 14 | ✅ YES | `eqlen.py` |
+| `vlt.data.matrow2cell()` | 11 | ✅ YES | `matrow2cell.py` |
+| `vlt.data.celloritem()` | 9 | ✅ YES | `celloritem.py` |
+| `vlt.data.cellarray2mat()` | 8 | ✅ YES | `cellarray2mat.py` |
+| `vlt.data.var2struct()` | 7 | ✅ YES | `var2struct.py` |
+| `vlt.data.rowvec()` | 7 | ✅ YES | `rowvec.py` |
+| `vlt.data.fieldsearch()` | 7 | ✅ YES | `fieldsearch.py` |
+| `vlt.data.equnique()` | 6 | ✅ YES | `equnique.py` |
+| `vlt.data.hasAllFields()` | 6 | ✅ YES | `hasAllFields.py` |
+| `vlt.data.conditional()` | 6 | ✅ YES | `conditional.py` |
+| `vlt.data.findclosest()` | 5 | ✅ YES | `findclosest.py` |
+| `vlt.data.nanstderr()` | 4 | ✅ YES | `nanstderr.py` |
+| `vlt.data.dropnan()` | 4 | ✅ YES | `dropnan.py` |
+| `vlt.data.hashmatlabvariable()` | 3 | ✅ YES | `hashmatlabvariable.py` |
+| `vlt.data.islikevarname()` | 3 | ✅ YES | `islikevarname.py` |
+| `vlt.data.string2cell()` | 3 | ✅ YES | `string2cell.py` |
+| `vlt.data.structmerge()` | 3 | ✅ YES | `structmerge.py` |
+| `vlt.data.flattenstruct2table()` | 3 | ✅ YES | `flattenstruct2table.py` |
+| `vlt.data.prettyjson()` | 2 | ✅ YES | `prettyjson.py` |
+| `vlt.data.jsonencodenan()` | 2 | ✅ YES | `jsonencodenan.py` |
+| `vlt.data.columnize_struct()` | 2 | ✅ YES | `columnize_struct.py` |
+| `vlt.data.structwhatvaries()` | 1 | ✅ YES | `structwhatvaries.py` |
+| `vlt.data.structfullfields()` | 1 | ✅ YES | `structfullfields.py` |
+| `vlt.data.partial_struct_match()` | 1 | ✅ YES | `partial_struct_match.py` |
+| `vlt.data.isint()` | 1 | ✅ YES | `isint.py` |
+| `vlt.data.findrowvec()` | 1 | ✅ YES | `findrowvec.py` |
+| `vlt.data.emptytable()` | 1 | ✅ YES | `emptytable.py` |
+| `vlt.data.cell2str()` | 1 | ✅ YES | `cell2str.py` |
+| `vlt.data.tabstr2struct()` | 1 | ✅ YES | `tabstr2struct.py` |
+| `vlt.data.workspace2struct()` | 1 | ✅ YES | `workspace2struct.py` |
 
-| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
-|----------|--------------|--------------------------|--------|
-| `vlt.file.textfile2char()` | 14 | ⬜ Check | If missing, contribute PR |
-| `vlt.file.text2cellstr()` | 13 | ✅ Ported | Use it |
-| `vlt.file.str2text()` | 10 | ⬜ Check | If missing, contribute PR |
-| `vlt.file.loadStructArray()` | 9 | ⬜ Check | If missing, contribute PR |
-| `vlt.file.dumbjsondb` | 9 | ⬜ Check | If missing, contribute PR |
-| `vlt.file.createpath()` | 1 | ✅ Ported | Use it |
-| `vlt.file.touch()` | 1 | ✅ Ported | Use it |
+**RESULT: ALL 33 vlt.data functions are already ported!**
 
-### vlt.neuro Functions (May Need New Module)
+### vlt.file Functions - AUDIT RESULTS (7 files exist)
 
-| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
-|----------|--------------|--------------------------|--------|
-| `vlt.neuro.stimulus.*` | 8 | ⬜ Check | May need new module |
-| `vlt.neuro.spikesorting.*` | 5 | ⬜ Check | May need new module |
+**Source:** https://github.com/VH-Lab/vhlab-toolbox-python/tree/main/vlt/file
+
+| Function | Calls in NDI | In vhlab-toolbox-python? | Notes |
+|----------|--------------|--------------------------|-------|
+| `vlt.file.textfile2char()` | 14 | ⚠️ UNCLEAR | Not in visible file list |
+| `vlt.file.text2cellstr()` | 13 | ⚠️ UNCLEAR | Mentioned in PORTING_PROGRESS but not visible |
+| `vlt.file.str2text()` | 10 | ⚠️ UNCLEAR | Not in visible file list |
+| `vlt.file.loadStructArray()` | 9 | ⚠️ UNCLEAR | May be in `custom_struct_io.py` |
+| `vlt.file.dumbjsondb` | 9 | ⚠️ UNCLEAR | Not visible |
+| `vlt.file.findfilegroups()` | 9 | ⚠️ UNCLEAR | Not visible |
+| `vlt.file.fileobj` | 7 | ⚠️ UNCLEAR | Not visible |
+| `vlt.file.saveStructArray()` | 5 | ⚠️ UNCLEAR | May be in `custom_struct_io.py` |
+| `vlt.file.createpath()` | 1 | ✅ Mentioned | Per PORTING_PROGRESS.md |
+| `vlt.file.touch()` | 1 | ✅ Mentioned | Per PORTING_PROGRESS.md |
+| `vlt.file.custom_file_formats.*` | 5 | ✅ EXISTS | `custom_file_formats.py` |
+
+**ACTION REQUIRED:** Clone repo locally to verify file contents match PORTING_PROGRESS.md
+
+### vlt.signal Functions - AUDIT RESULTS (6 files exist)
+
+**Source:** https://github.com/VH-Lab/vhlab-toolbox-python/tree/main/vlt/signal
+
+| Function | Calls in NDI | In vhlab-toolbox-python? | File |
+|----------|--------------|--------------------------|------|
+| `vlt.signal.dotdisc()` | 2 | ✅ YES | `dotdisc.py` |
+| `vlt.signal.refractory()` | 2 | ✅ YES | `refractory.py` |
+| `vlt.signal.value2sample()` | 2 | ✅ YES | `value2sample.py` |
+
+**RESULT: All 3 critical signal functions are ported!**
+
+### vlt.neuro Functions - AUDIT RESULTS (subdirectories exist)
+
+**Source:** https://github.com/VH-Lab/vhlab-toolbox-python/tree/main/vlt/neuro
+
+Subdirectories exist but file contents not visible from web:
+- `vlt/neuro/spikesorting/` - needs verification
+- `vlt/neuro/stimulus/` - needs verification
+- `vlt/neuro/vision/` - needs verification
+
+**ACTION REQUIRED:** Clone repo locally to verify contents
+
+### DID-python Classes - AUDIT RESULTS
+
+**Source:** https://github.com/VH-Lab/DID-python
+
+**did.document.Document class methods:**
+- `__init__(document_type, **options)` - Constructor
+- `id()` - Get document ID
+- `add_dependency(name, value)` - Add dependency
+- `get_dependency_value(name, error_if_not_found)` - Get dependency
+- `set_dependency_value(name, value, error_if_not_found)` - Set dependency
+- `add_dependency_value_n(name, value)` - Add numbered dependency
+- `remove_dependency_value_n(name, n)` - Remove numbered dependency
+- `add_file(name, location, ...)` - Add file
+- `remove_file(name, location)` - Remove file
+- `is_in_file_list(name)` - Check file list
+- `_read_blank_definition(document_type)` - Load schema
+- `__eq__(other)` - Equality by ID
+
+**did.query.Query class methods:**
+- `__init__(...)` - Flexible constructor (dict, list, Query, or field/op/params)
+- `__and__` - Combine with AND (`&` operator)
+- `__or__` - Combine with OR (`|` operator)
+- `to_search_structure()` - Export to dict
+
+**RESULT: Core DID classes have all essential methods!**
 
 ---
 
@@ -493,6 +575,31 @@ These should be **thin wrappers** over DID-python, NOT reimplementations.
 
 ---
 
+## Lessons Learned: Context Discovery
+
+**Problem:** Previous conversion attempt failed because Claude wrote dependency code inline instead of using existing Python repos.
+
+**Root Cause:** The existing VH-Lab Python repos were not discovered because:
+1. README.md and AGENTS.md don't mention Python
+2. The repos are in a different GitHub organization location
+3. User context was needed to reveal their existence
+
+**Key Files That Should Have Been Checked:**
+1. `src/ndi/docs/NDI-matlab/index.md` - Line 23 says "a version for Python is well under construction"
+2. `src/ndi/docs/developer_notes/vltInNDI.md` - Complete list of all 97 vlt.* functions with file:line locations
+3. The VH-Lab GitHub organization directly - has DID-python, vhlab-toolbox-python, etc.
+
+**Context Discovery Protocol for Future Sessions:**
+1. Always check `docs/` folder for developer notes, especially `developer_notes/`
+2. Search for "python" in all markdown files
+3. Check the GitHub organization for sibling repos (not just this repo)
+4. Ask the user about existing Python work before proposing to create new packages
+5. Read files like index.md that describe the project's ecosystem
+
+**Key Discovery:** vhlab-toolbox-python explicitly states it's a "partial port for supporting NDI-python" - this repo was PURPOSE-BUILT for NDI conversion.
+
+---
+
 ## Session Notes
 
 *Add notes from each work session here*
@@ -503,6 +610,17 @@ These should be **thin wrappers** over DID-python, NOT reimplementations.
 - Created this status tracking file
 - Analyzed all did.*, vlt.*, and ndr.* dependencies
 - Ready to begin Phase 0: did-python
+
+### 2026-02-03 - Updated with Existing Repos
+- Discovered existing VH-Lab Python repos after user feedback
+- Updated plan to use DID-python, vhlab-toolbox-python as dependencies
+- Audited actual contents of vhlab-toolbox-python:
+  - vlt/data: 36 files - ALL 33 needed functions are ported!
+  - vlt/signal: 6 files - all 3 critical functions ported
+  - vlt/file: 7 files - some gaps, needs local verification
+  - vlt/neuro: subdirectories exist, needs verification
+- Audited DID-python document.py and query.py - core classes implemented
+- Added "Lessons Learned" section for context discovery
 
 ---
 
