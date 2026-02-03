@@ -6,90 +6,119 @@
 
 ---
 
+## CRITICAL: Existing VH-Lab Python Repositories
+
+**These packages ALREADY EXIST. Do NOT recreate them:**
+
+| Repository | URL | What It Contains |
+|------------|-----|------------------|
+| **DID-python** | https://github.com/VH-Lab/DID-python | `did.document`, `did.query`, `did.database`, `did.implementations/` |
+| **vhlab-toolbox-python** | https://github.com/VH-Lab/vhlab-toolbox-python | 34 `vlt.data` functions, 9 `vlt.file` functions |
+| **vhlab-library-python** | https://github.com/VH-Lab/vhlab-library-python | Library utilities |
+| **vhlab-NewStim-python** | https://github.com/VH-Lab/vhlab-NewStim-python | Stimulus metadata readers |
+
+**Previous conversion failed because Claude wrote all this code inline. USE THESE AS DEPENDENCIES.**
+
+---
+
 ## Phase Summary
 
-| Phase | Component | Status | Tests | Blocked By | Notes |
-|-------|-----------|--------|-------|------------|-------|
-| 0 | did-python | ⬜ Not Started | 0% | - | **START HERE** - Critical dependency |
-| 1 | ndi.util | ⬜ Not Started | 0% | Phase 0 | 87 functions to port |
-| 2 | ndi.document, ndi.query, ndi.ido | ⬜ Not Started | 0% | Phase 0-1 | Core data structures |
-| 3 | ndi.database | ⬜ Not Started | 0% | Phase 2 | SQLite + JSON backends |
-| 4 | ndi.time | ⬜ Not Started | 0% | Phase 2-3 | Syncgraph is complex |
-| 5 | ndi.daq | ⬜ Not Started | 0% | Phase 4 | spikeinterface integration |
-| 6 | ndi.element, ndi.epoch, ndi.probe | ⬜ Not Started | 0% | Phase 5 | |
-| 7 | ndi.session | ⬜ Not Started | 0% | Phase 6 | Central orchestrator |
-| 8 | ndi.dataset, ndi.subject, ndi.neuron | ⬜ Not Started | 0% | Phase 7 | |
-| 9 | ndi.app, ndi.calculator | ⬜ Not Started | 0% | Phase 8 | Analysis apps |
-| 10 | ndi.cloud | ⬜ Not Started | 0% | Phase 8 | REST client |
+| Phase | Component | Status | Tests | Notes |
+|-------|-----------|--------|-------|-------|
+| 0 | External Dependencies | ✅ EXIST | N/A | Use DID-python, vhlab-toolbox-python as deps |
+| 1 | Gap Analysis | ⬜ Not Started | 0% | Check if any vlt.* functions missing |
+| 2 | ndi.document, ndi.query, ndi.ido | ⬜ Not Started | 0% | Thin wrappers over DID-python |
+| 3 | ndi.database | ⬜ Not Started | 0% | Wrapper over DID implementations |
+| 4 | ndi.time | ⬜ Not Started | 0% | Syncgraph, timemapping |
+| 5 | ndi.daq | ⬜ Not Started | 0% | spikeinterface integration |
+| 6 | ndi.element, ndi.epoch, ndi.probe | ⬜ Not Started | 0% | |
+| 7 | ndi.session | ⬜ Not Started | 0% | Central orchestrator |
+| 8 | ndi.dataset, ndi.subject, ndi.neuron | ⬜ Not Started | 0% | |
+| 9 | ndi.app, ndi.calculator | ⬜ Not Started | 0% | Analysis apps |
+| 10 | ndi.cloud | ⬜ Not Started | 0% | REST client |
 
 ### Legend
 - ⬜ Not Started
 - 🟡 In Progress
-- ✅ Complete
+- ✅ Complete / Exists Externally
 - 🔴 Blocked
 
 ---
 
-## Phase 0: did-python (CRITICAL - DO FIRST)
+## Phase 0: External Dependencies (ALREADY EXIST)
 
-This is a **separate repository** that must be created before NDI conversion can proceed.
+### DID-python - https://github.com/VH-Lab/DID-python
+- [x] Repository exists (170 commits, 5 contributors)
+- [x] `did.document` - Document class
+- [x] `did.query` - Query class
+- [x] `did.database` - Database base class
+- [x] `did.binarydoc` - Binary document handling
+- [x] `did.datastructures/` - Data structure utilities
+- [x] `did.file/` - File utilities
+- [x] `did.implementations/` - SQLite and other backends
 
-### Repository Setup
-- [ ] Create `did-python` repository
-- [ ] Set up pyproject.toml
-- [ ] Set up pytest and CI
+**Action:** Clone and verify it meets NDI needs. Contribute fixes if needed.
 
-### did.ido (Identifier Generation)
-- [ ] `unique_id()` - Generate UUID-based identifiers
-- [ ] `is_valid()` - Validate identifier format
-- [ ] Unit tests
+### vhlab-toolbox-python - https://github.com/VH-Lab/vhlab-toolbox-python
+- [x] Repository exists (46 commits, partial port for NDI)
+- [x] `vlt.data` - 34 functions ported
+- [x] `vlt.file` - 9 functions ported
+- [x] `vlt.app.log` - Logging
 
-### did.document (Document Base Class)
-- [ ] `Document` class with `document_properties`
-- [ ] `from_json()` / `to_json()` serialization
-- [ ] `read_blank_definition()` - Load from JSON schema
-- [ ] `id` property
-- [ ] Unit tests
+**See their PORTING_PROGRESS.md for details.**
 
-### did.query (Query System)
-- [ ] `Query` class with field, operation, params
-- [ ] `QueryOp` enum (all 12 operations)
-- [ ] `__and__`, `__or__`, `__invert__` operators
-- [ ] `to_search_structure()` conversion
-- [ ] Unit tests
-
-### did.datastructures (Utilities)
-- [ ] `empty_dict()` / `emptystruct()` equivalent
-- [ ] `json_encode_nan()` - Handle NaN in JSON
-- [ ] Unit tests
-
-### did.file (File Utilities)
-- [ ] `FileObj` class
-- [ ] `ReadOnlyFileObj` class
-- [ ] `write_text()` / `read_text()` helpers
-- [ ] Unit tests
-
-### did.common.PathConstants
-- [ ] Path definitions map
-- [ ] NDI schema path integration
-- [ ] Unit tests
-
-### did.implementations.SQLiteDB
-- [ ] `__init__()` with database initialization
-- [ ] `add_docs()` - Add documents
-- [ ] `get_docs()` - Retrieve by ID
-- [ ] `remove_docs()` - Delete documents
-- [ ] `search()` - Query execution
-- [ ] `get_doc_ids()` - List all IDs
-- [ ] Binary file storage (open/close)
-- [ ] Unit tests
-- [ ] Integration tests
+### vhlab-NewStim-python - https://github.com/VH-Lab/vhlab-NewStim-python
+- [x] Repository exists
+- [x] Stimulus metadata readers
 
 ---
 
-## Phase 1: ndi.util
+## Phase 1: Gap Analysis (Check What's Missing)
 
-### ndi.util.data (69 functions → ~30 Python functions)
+Before writing any code, verify which vlt.* functions NDI needs are already ported.
+
+### vlt.data Functions Needed by NDI
+
+| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
+|----------|--------------|--------------------------|--------|
+| `vlt.data.emptystruct()` | 69 | ⬜ Check | If missing, contribute PR |
+| `vlt.data.assign()` | 26 | N/A | Use Python kwargs |
+| `vlt.data.colvec()` | 16 | ⬜ Check | If missing, contribute PR |
+| `vlt.data.eqlen()` | 14 | ⬜ Check | If missing, contribute PR |
+| `vlt.data.matrow2cell()` | 11 | ⬜ Check | If missing, contribute PR |
+| `vlt.data.celloritem()` | 9 | ⬜ Check | If missing, contribute PR |
+| `vlt.data.cellarray2mat()` | 8 | ✅ Ported | Use it |
+| `vlt.data.structmerge()` | 3 | ✅ Ported | Use it |
+| `vlt.data.flattenstruct2table()` | 3 | ✅ Ported | Use it |
+| `vlt.data.isint()` | 1 | ✅ Ported | Use it |
+| `vlt.data.islikevarname()` | 3 | ✅ Ported | Use it |
+
+### vlt.file Functions Needed by NDI
+
+| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
+|----------|--------------|--------------------------|--------|
+| `vlt.file.textfile2char()` | 14 | ⬜ Check | If missing, contribute PR |
+| `vlt.file.text2cellstr()` | 13 | ✅ Ported | Use it |
+| `vlt.file.str2text()` | 10 | ⬜ Check | If missing, contribute PR |
+| `vlt.file.loadStructArray()` | 9 | ⬜ Check | If missing, contribute PR |
+| `vlt.file.dumbjsondb` | 9 | ⬜ Check | If missing, contribute PR |
+| `vlt.file.createpath()` | 1 | ✅ Ported | Use it |
+| `vlt.file.touch()` | 1 | ✅ Ported | Use it |
+
+### vlt.neuro Functions (May Need New Module)
+
+| Function | Calls in NDI | In vhlab-toolbox-python? | Action |
+|----------|--------------|--------------------------|--------|
+| `vlt.neuro.stimulus.*` | 8 | ⬜ Check | May need new module |
+| `vlt.neuro.spikesorting.*` | 5 | ⬜ Check | May need new module |
+
+---
+
+## Phase 2: ndi.document, ndi.query, ndi.ido
+
+These should be **thin wrappers** over DID-python, NOT reimplementations.
+
+### ndi.document (wrapper over did.document)
 
 | MATLAB Function | Python Function | Status |
 |-----------------|-----------------|--------|

@@ -4,13 +4,30 @@
 
 This document provides a complete, authoritative plan for converting NDI-Matlab to Python. The conversion is designed to:
 
-1. **NOT convert external dependencies inline** - Map to existing Python libraries instead
-2. **Preserve the architecture** - Maintain the same patterns and APIs
-3. **Be incrementally verifiable** - Each phase produces working, tested code
-4. **Support context continuity** - Any developer (human or AI) can pick up from any phase
+1. **USE EXISTING VH-Lab Python packages** - DID-python, vhlab-toolbox-python already exist
+2. **NOT convert external dependencies inline** - This was the failure mode of previous attempts
+3. **Preserve the architecture** - Maintain the same patterns and APIs
+4. **Be incrementally verifiable** - Each phase produces working, tested code
+5. **Support context continuity** - Any developer (human or AI) can pick up from any phase
 
-**Estimated Scope:** ~747 MATLAB files → ~200 Python files
-**Key Insight:** 70% of the work is handled by existing Python libraries
+**Estimated Scope:** ~747 MATLAB files → ~150 Python files (less because dependencies exist)
+**Key Insight:** Core dependencies (DID, VLT) are ALREADY PORTED by VH-Lab
+
+---
+
+## CRITICAL: Existing VH-Lab Python Repositories
+
+**These packages ALREADY EXIST and must be used as dependencies, NOT recreated:**
+
+| Repository | URL | Status |
+|------------|-----|--------|
+| **DID-python** | https://github.com/VH-Lab/DID-python | ✅ Active (170 commits, 5 contributors) |
+| **vhlab-toolbox-python** | https://github.com/VH-Lab/vhlab-toolbox-python | ✅ Active (46 commits, partial port for NDI) |
+| **vhlab-library-python** | https://github.com/VH-Lab/vhlab-library-python | ✅ Available |
+| **vhlab-NewStim-python** | https://github.com/VH-Lab/vhlab-NewStim-python | ✅ Available |
+
+**Previous conversion attempts failed because Claude wrote all dependency code inline.
+This plan uses these existing packages as pip dependencies.**
 
 ---
 
@@ -33,49 +50,84 @@ This document provides a complete, authoritative plan for converting NDI-Matlab 
 
 ### 1.1 External Repository → Python Library Mapping
 
-| MATLAB Repository | Python Equivalent | Notes |
-|-------------------|-------------------|-------|
-| **DID-matlab** | **`did-python`** (NEW) | Must create - core document/database system |
-| **NDR-matlab** | **`spikeinterface`** + **`neo`** | Existing libraries cover 95% of functionality |
-| **vhlab-toolbox-matlab** | **`numpy`** + **`scipy`** + **`ndi.util`** | Most functions have direct equivalents |
+| MATLAB Repository | Python Equivalent | Status |
+|-------------------|-------------------|--------|
+| **DID-matlab** | **[DID-python](https://github.com/VH-Lab/DID-python)** | ✅ EXISTS - use as dependency |
+| **vhlab-toolbox-matlab** | **[vhlab-toolbox-python](https://github.com/VH-Lab/vhlab-toolbox-python)** | ✅ EXISTS - partial port for NDI |
+| **vhlab-library-matlab** | **[vhlab-library-python](https://github.com/VH-Lab/vhlab-library-python)** | ✅ EXISTS - use as dependency |
+| **vhlab-NewStim-matlab** | **[vhlab-NewStim-python](https://github.com/VH-Lab/vhlab-NewStim-python)** | ✅ EXISTS - use as dependency |
+| **NDR-matlab** | **`spikeinterface`** + **`neo`** | ✅ External libs cover 95% |
 | **vhlab-thirdparty-matlab** | Native Python libs | sigTOOL → neo.io handles Spike2 |
-| **mksqlite** | **`sqlite3`** (builtin) | Direct replacement |
-| **openMINDS_MATLAB** | **`openminds`** | Already exists in Python |
-| **NDI-compress-matlabp** | **`zlib`** + **`lz4`** + custom | Standard compression libraries |
+| **mksqlite** | **`sqlite3`** (builtin) | ✅ Direct replacement |
+| **openMINDS_MATLAB** | **`openminds`** | ✅ Already exists in Python |
+| **NDI-compress-matlabp** | **`zlib`** + **`lz4`** | ✅ Standard compression |
 
-### 1.2 DID-matlab Functions → Python Implementation
+### 1.2 DID-python Package (ALREADY EXISTS)
 
-DID-matlab is the most critical dependency. Here's the complete mapping:
+**Repository:** https://github.com/VH-Lab/DID-python
 
-```python
-# did-python package structure
+**Package Structure (already implemented):**
+```
 did/
 ├── __init__.py
+├── binarydoc.py         # Binary document handling
+├── database.py          # did.database base class
 ├── document.py          # did.document
 ├── query.py             # did.query
-├── ido.py               # did.ido (identifier generation)
-├── database.py          # did.database base class
-├── datastructures.py    # did.datastructures utilities
-├── file.py              # did.file utilities
-├── common/
-│   └── path_constants.py
-└── implementations/
-    └── sqlitedb.py      # did.implementations.sqlitedb
+├── common/              # Common utilities
+├── datastructures/      # did.datastructures
+├── db/                  # Database utilities
+├── file/                # did.file utilities
+├── fun/                 # Helper functions
+└── implementations/     # Database implementations (SQLite, etc.)
 ```
 
-**Critical Functions (30+ calls in NDI):**
+**NDI should import from this package:**
+```python
+from did.document import Document
+from did.query import Query
+from did.database import Database
+from did.implementations import SQLiteDB
+```
 
-| MATLAB | Python | Implementation |
-|--------|--------|----------------|
-| `did.ido.unique_id()` | `did.ido.unique_id()` | `uuid.uuid4().hex` |
-| `did.ido.isvalid(id)` | `did.ido.is_valid(id)` | Regex validation |
-| `did.query(field, op, val)` | `did.Query(field, op, val)` | Dataclass with operators |
-| `did.document.readjsonfilelocation()` | `did.document.read_json_file_location()` | JSON loader with path resolution |
-| `did.datastructures.emptystruct()` | `did.datastructures.empty_dict()` | `dict.fromkeys(fields)` |
-| `did.datastructures.jsonencodenan()` | `did.datastructures.json_encode_nan()` | Custom JSON encoder |
-| `did.file.str2text()` | `did.file.write_text()` | `pathlib.Path.write_text()` |
-| `did.file.fileobj` | `did.file.FileObj` | File wrapper class |
-| `did.implementations.sqlitedb` | `did.implementations.SQLiteDB` | SQLite with document storage |
+### 1.3 vhlab-toolbox-python Package (ALREADY EXISTS - PARTIAL)
+
+**Repository:** https://github.com/VH-Lab/vhlab-toolbox-python
+
+**Explicitly stated purpose:** "partial port for supporting NDI-python"
+
+**Already Ported (per PORTING_PROGRESS.md):**
+
+| Module | Functions Ported | Count |
+|--------|------------------|-------|
+| `vlt.app` | `vlt.app.log.Log` | 1 |
+| `vlt.data` | `cellarray2mat`, `flattenstruct2table`, `structmerge`, `isint`, `islikevarname`, + 29 more | 34 |
+| `vlt.file` | `isfilepathroot`, `fullfilename`, `createpath`, `touch`, `text2cellstr`, `checkout_lock_file`, `release_lock_file`, + 2 more | 9 |
+
+**If additional functions needed:** Contribute to vhlab-toolbox-python, don't duplicate.
+
+**NDI should import from this package:**
+```python
+from vlt.data import cellarray2mat, structmerge, flattenstruct2table
+from vlt.file import text2cellstr, createpath
+```
+
+### 1.4 Functions That May Need Adding to vhlab-toolbox-python
+
+Based on NDI-matlab analysis, these vlt.* functions are heavily used but may not be ported yet:
+
+| Function | Calls in NDI | Priority |
+|----------|--------------|----------|
+| `vlt.data.emptystruct()` | 69 | HIGH |
+| `vlt.data.assign()` | 26 | MEDIUM (use kwargs in Python) |
+| `vlt.data.colvec()` | 16 | HIGH |
+| `vlt.data.eqlen()` | 14 | HIGH |
+| `vlt.data.celloritem()` | 9 | MEDIUM |
+| `vlt.file.textfile2char()` | 14 | HIGH |
+| `vlt.file.loadStructArray()` | 9 | HIGH |
+| `vlt.file.dumbjsondb` | 9 | HIGH |
+
+**Action:** Check vhlab-toolbox-python for these. If missing, contribute PRs to that repo.
 
 ### 1.3 VLT Toolbox Functions → Python Implementation
 
@@ -432,37 +484,37 @@ Level 7 (Depends on Level 6):
 
 ## 3. Phase Breakdown
 
-### Phase 0: did-python Package (CRITICAL - DO FIRST)
+### Phase 0: Verify and Integrate Existing Dependencies (ALREADY DONE)
 
-**Objective:** Create standalone `did-python` package that NDI-python will import.
+**Status:** ✅ COMPLETE - These packages already exist
 
-**Repository:** `did-python` (separate repo)
+**DID-python:** https://github.com/VH-Lab/DID-python
+- 170 commits, 5 contributors
+- Contains: `did.document`, `did.query`, `did.database`, `did.implementations/`
 
-**Files to Create:**
+**vhlab-toolbox-python:** https://github.com/VH-Lab/vhlab-toolbox-python
+- 46 commits, explicitly for NDI support
+- Contains: 34 `vlt.data` functions, 9 `vlt.file` functions
+- See `PORTING_PROGRESS.md` in that repo for details
 
-```
-did-python/
-├── pyproject.toml
-├── README.md
-├── did/
-│   ├── __init__.py
-│   ├── document.py         # Document class
-│   ├── query.py            # Query class with operators
-│   ├── ido.py              # Identifier generation
-│   ├── database.py         # Abstract database
-│   ├── datastructures.py   # Utility functions
-│   ├── file.py             # File utilities
-│   ├── common/
-│   │   ├── __init__.py
-│   │   └── path_constants.py
-│   └── implementations/
-│       ├── __init__.py
-│       └── sqlitedb.py     # SQLite implementation
-└── tests/
-    ├── test_document.py
-    ├── test_query.py
-    ├── test_database.py
-    └── test_ido.py
+**Action Items for Phase 0:**
+1. [ ] Clone and test DID-python locally
+2. [ ] Clone and test vhlab-toolbox-python locally
+3. [ ] Verify all NDI-required functions exist (see Section 1.4)
+4. [ ] If functions missing, contribute PRs to those repos
+5. [ ] Document any gaps
+
+**DO NOT recreate these packages. Use them as dependencies:**
+
+```python
+# pyproject.toml for ndi-python
+[project]
+dependencies = [
+    "did-python @ git+https://github.com/VH-Lab/DID-python.git",
+    "vhlab-toolbox-python @ git+https://github.com/VH-Lab/vhlab-toolbox-python.git",
+    "vhlab-newstim-python @ git+https://github.com/VH-Lab/vhlab-NewStim-python.git",
+    # ... other deps
+]
 ```
 
 **Key Classes:**
